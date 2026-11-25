@@ -191,6 +191,71 @@
             color: #ff4d6d;
         }
 
+        /* ปุ่มเล่นครบหมดแล้ว */
+        .all-done-wrap {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .btn-all-done {
+            background: linear-gradient(45deg, #ff2a5f, #ff758f);
+            padding: 14px 30px;
+            font-size: 1.05rem;
+            animation: pulseBtn 1.8s infinite;
+        }
+        @keyframes pulseBtn {
+            0%, 100% { transform: scale(1); box-shadow: 0 6px 20px rgba(255, 42, 95, 0.35); }
+            50% { transform: scale(1.04); box-shadow: 0 10px 28px rgba(255, 42, 95, 0.55); }
+        }
+
+        /* Popup หลับตาก่อน */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(74, 20, 35, 0.55);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeOverlay 0.35s ease forwards;
+        }
+        .popup-overlay.show {
+            display: flex;
+        }
+        @keyframes fadeOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .popup-box {
+            background: #ffffff;
+            border: 3px solid #ffb3c1;
+            border-radius: 30px;
+            padding: 36px 26px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 20px 45px rgba(255, 77, 109, 0.35);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.75); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .popup-title {
+            font-family: 'Mali', cursive;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #ff4d6d;
+            margin-bottom: 10px;
+        }
+        .popup-desc {
+            font-size: 0.96rem;
+            color: #666;
+            margin-bottom: 22px;
+        }
+
         /* ส่วนย่อยในแอปที่ 1 */
         .btn-group {
             display: flex;
@@ -249,6 +314,11 @@
             padding: 16px 14px;
             margin-bottom: 14px;
             border: 1.5px dashed #ff8fa3;
+        }
+        .highlight-box.total-box {
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
+            border: 2px solid #ff4d6d;
+            box-shadow: 0 6px 16px rgba(255, 77, 109, 0.14);
         }
         .event-title {
             font-size: 0.86rem;
@@ -448,7 +518,7 @@
             text-align: left;
         }
 
-        /* ส่วนย่อยในแอปที่ 4: จดหมายความในใจ (รวมจากไฟล์ next) */
+        /* ส่วนย่อยในแอปที่ 4: จดหมายความในใจ */
         .envelope-emoji {
             font-size: 4.5rem;
             margin-bottom: 14px;
@@ -534,7 +604,7 @@
             position: fixed;
             font-size: 1.8rem;
             pointer-events: none;
-            z-index: 99;
+            z-index: 150;
             animation: burstUp 1.5s ease-out forwards;
         }
         @keyframes burstUp {
@@ -582,13 +652,18 @@
                     <div class="app-desc">จะดวงดีหรือดวงกุด ?</div>
                 </div>
 
-                <!-- ช่องที่ 4: บอกความในใจ (รวมเข้ามาในหน้าเดียวกันแล้ว) -->
+                <!-- ช่องที่ 4: บอกความในใจ -->
                 <div class="app-tile" onclick="openScreen('screen-app4')">
                     <span class="badge-done" id="badge-4"></span>
                     <div class="app-icon">💌</div>
                     <div class="app-name">ความในใจ</div>
                     <div class="app-desc">อยากบอกเบบี๋</div>
                 </div>
+            </div>
+
+            <!-- ปุ่มเล่นครบหมดแล้ว (แสดงเมื่อเล่นครบทั้ง 4 ช่อง) -->
+            <div class="all-done-wrap" id="all-done-wrap">
+                <button class="btn btn-all-done" onclick="showCloseEyesPopup()">เล่นครบหมดแล้ว 💖</button>
             </div>
         </div>
 
@@ -608,7 +683,7 @@
             <!-- สเต็ปแกล้งขู่รอบ 1 -->
             <div class="btn-group" id="tease-choices-1" style="display: none;">
                 <button class="btn" onclick="startQuiz('ฮั่นแน่! รีบจำได้เลยนะ 😜 วันไหนเอ่ย?', '😏')">จำได้แล้วๆ ล้อเล่น! 😜</button>
-                <button class="btn btn-secondary" onclick="askKissStep()">จำไม่ได้จริงๆ ง่ะ 🥺</button>
+                <button class="btn btn-secondary" onclick="askKissStep()">จำไม่ได้จริง ๆ 🥺</button>
             </div>
 
             <!-- สเต็ปอ้อนขอจุ้บก่อนเฉลย -->
@@ -624,8 +699,9 @@
                 <button class="quiz-btn" onclick="checkDate(false, this)">18 กันยายน 2567</button>
             </div>
 
-            <!-- สรุปเวลาคบกัน (โชว์หลังทายเสร็จ) -->
+            <!-- สรุปเวลาคบกัน (โชว์หลังทายเสร็จ 3 กล่อง) -->
             <div id="app1-summary" style="display: none;">
+                <!-- กล่องที่ 1: วันแรกที่ทัก -->
                 <div class="highlight-box">
                     <span class="event-title">วันที่เค้าทักหาเบบี๋</span>
                     <div class="date-badge">28 กันยายน 2567</div>
@@ -634,12 +710,21 @@
                     <span class="sub-days">(ทั้งหมด <span id="talk-days">505 วัน</span> 💕)</span>
                 </div>
 
+                <!-- กล่องที่ 2: วันที่ขอเป็นแฟน -->
                 <div class="highlight-box">
                     <span class="event-title">วันที่เบบี๋ขอเค้าเป็นแฟน</span>
                     <div class="date-badge">15 กุมภาพันธ์ 2569</div>
                     <span class="event-title" style="margin-top: 4px;">คบกันมาจนถึงวันนี้แล้ว</span>
                     <span class="ymd-text" id="love-ymd">0 วัน</span>
                     <span class="sub-days">(ทั้งหมด <span id="love-days">0 วัน</span> 🥰)</span>
+                </div>
+
+                <!-- กล่องที่ 3: รวมทั้ง 1 และ 2 เข้าด้วยกัน -->
+                <div class="highlight-box total-box">
+                    <span class="event-title">เราอยู่ด้วยกัน</span>
+                    <div class="date-badge">ตั้งแต่รู้จักจนถึงวันนี้ 💖</div>
+                    <span class="ymd-text" id="total-ymd">0 วัน</span>
+                    <span class="sub-days">(รวมทั้งหมด <span id="total-days">0 วัน</span> ✨)</span>
                 </div>
             </div>
 
@@ -696,7 +781,7 @@
             </div>
         </div>
 
-        <!-- แอปที่ 4: ความในใจ (จดหมายจากไฟล์ next) -->
+        <!-- แอปที่ 4: ความในใจ (จดหมาย) -->
         <div class="screen" id="screen-app4">
             <!-- ส่วนซองจดหมาย (แสดงตอนแรก) -->
             <div id="envelope-section">
@@ -734,6 +819,16 @@
 
     </div>
 
+    <!-- Popup หลับตาก่อน -->
+    <div class="popup-overlay" id="close-eyes-popup" onclick="closePopup(event)">
+        <div class="popup-box" onclick="event.stopPropagation()">
+            <div class="emoji-big" style="font-size: 4.2rem; margin-bottom: 10px;">🙈</div>
+            <div class="popup-title">หลับตาก่อน 🙈💖</div>
+            <p class="popup-desc">ห้ามแอบดูน้าาา... 🤫✨</p>
+            <button class="btn" onclick="hideCloseEyesPopup()">หลับตาแล้วค้าบบ 🥰💕</button>
+        </div>
+    </div>
+
     <script>
         // หัวใจลอยพื้นหลัง
         function createHearts() {
@@ -750,6 +845,38 @@
             }
         }
         createHearts();
+
+        // สถานะการเล่นครบทั้ง 4 แอป
+        const completedApps = { 1: false, 2: false, 3: false, 4: false };
+
+        function markAppDone(appNum) {
+            completedApps[appNum] = true;
+            document.getElementById('badge-' + appNum).innerText = '✅';
+            checkAllCompleted();
+        }
+
+        function checkAllCompleted() {
+            if (completedApps[1] && completedApps[2] && completedApps[3] && completedApps[4]) {
+                document.getElementById('all-done-wrap').style.display = 'block';
+            }
+        }
+
+        // เปิด / ปิด Popup หลับตาก่อน
+        function showCloseEyesPopup() {
+            document.getElementById('close-eyes-popup').classList.add('show');
+            burstHearts(22);
+        }
+
+        function hideCloseEyesPopup() {
+            document.getElementById('close-eyes-popup').classList.remove('show');
+            burstHearts(15);
+        }
+
+        function closePopup(e) {
+            if (e.target.id === 'close-eyes-popup') {
+                hideCloseEyesPopup();
+            }
+        }
 
         // สลับหน้าจอแอป
         function openScreen(screenId) {
@@ -781,15 +908,25 @@
             return parts.length > 0 ? parts.join(' ') : '0 วัน';
         }
 
-        const startTalk = new Date(2024, 8, 28);
-        const startLove = new Date(2026, 1, 15);
-        const today = new Date();
+        const startTalk = new Date(2024, 8, 28); // 28 ก.ย. 2567
+        const startLove = new Date(2026, 1, 15); // 15 ก.พ. 2569
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const oneDay = 1000 * 60 * 60 * 24;
 
+        // 1. ช่วงทำความรู้จัก (28 ก.ย. 2567 -> 15 ก.พ. 2569)
+        const talkDaysCount = Math.round((startLove - startTalk) / oneDay);
         document.getElementById('talk-ymd').innerText = formatYMD(startTalk, startLove);
-        document.getElementById('talk-days').innerText = Math.round((startLove - startTalk) / oneDay) + ' วัน';
+        document.getElementById('talk-days').innerText = talkDaysCount + ' วัน';
+
+        // 2. ช่วงคบกัน (15 ก.พ. 2569 -> วันนี้)
+        const loveDaysCount = Math.max(0, Math.round((today - startLove) / oneDay));
         document.getElementById('love-ymd').innerText = formatYMD(startLove, today);
-        document.getElementById('love-days').innerText = Math.max(0, Math.floor((today - startLove) / oneDay)) + ' วัน';
+        document.getElementById('love-days').innerText = loveDaysCount + ' วัน';
+
+        // 3. รวมทั้งหมดทั้ง 1 และ 2 (28 ก.ย. 2567 -> วันนี้)
+        document.getElementById('total-ymd').innerText = formatYMD(startTalk, today);
+        document.getElementById('total-days').innerText = (talkDaysCount + loveDaysCount) + ' วัน';
 
         // ลอจิกแอปที่ 1 (แกล้งขู่ -> อ้อนขอจุ้บ -> เฉลย)
         function teaseStep1() {
@@ -802,7 +939,7 @@
         function askKissStep() {
             document.getElementById('tease-choices-1').style.display = 'none';
             document.getElementById('app1-emoji').innerText = '🥺';
-            document.getElementById('app1-title').innerText = 'งั้นต้องจุ้บเค้าก่อน ถึงจะยอมเฉลยให้! 😘';
+            document.getElementById('app1-title').innerText = 'งั้นต้องจุ้บเค้าก่อน 😘';
             document.getElementById('kiss-choices').style.display = 'flex';
         }
 
@@ -814,7 +951,7 @@
             reply.style.display = 'block';
             reply.innerText = 'เย้ คิคิ เฉลยยย ! 💕';
             document.getElementById('app1-summary').style.display = 'block';
-            document.getElementById('badge-1').innerText = '✅';
+            markAppDone(1);
         }
 
         function startQuiz(titleText, emojiIcon) {
@@ -843,7 +980,7 @@
                 reply.style.display = 'block';
                 reply.innerText = 'เก่งที่สุดเลย เอาจุ้บไปเลยยย 😘💕';
                 document.getElementById('app1-summary').style.display = 'block';
-                document.getElementById('badge-1').innerText = '✅';
+                markAppDone(1);
             } else {
                 btnElement.classList.add('wrong');
                 document.getElementById('app1-emoji').innerText = '😝';
@@ -953,7 +1090,7 @@
             } else {
                 document.getElementById('tot-play-area').style.display = 'none';
                 document.getElementById('tot-result-area').style.display = 'block';
-                document.getElementById('badge-2').innerText = '✅';
+                markAppDone(2);
 
                 const listEl = document.getElementById('tot-summary-list');
                 listEl.innerHTML = totAnswers.map((ans, i) => `
@@ -1052,7 +1189,7 @@
                     <div style="margin-bottom: 8px;">2️⃣ <strong>${pickedCards[1].prize.title}</strong><br><span style="font-weight: 400; font-size: 0.82rem;">(${pickedCards[1].prize.desc})</span></div>
                 `;
                 
-                document.getElementById('badge-3').innerText = '✅';
+                markAppDone(3);
             }
         }
 
@@ -1060,7 +1197,7 @@
         function openLetter() {
             document.getElementById('envelope-section').style.display = 'none';
             document.getElementById('letter-section').style.display = 'block';
-            document.getElementById('badge-4').innerText = '✅';
+            markAppDone(4);
             burstHearts(12);
         }
 
