@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สุ่มดวงที่เบบี๋กำหนดเอง 💕✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            color: #4a4a4a;
+            padding: 20px;
+        }
+
+        /* หัวใจและดาวน่ารักลอยพื้นหลัง */
+        .heart-bg {
+            position: fixed;
+            color: rgba(255, 117, 143, 0.28);
+            animation: floatUp linear infinite;
+            user-select: none;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.8); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        /* กรอบแอปหลักสไตล์น่ารักพาสเทล */
+        .app-container {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border: 2px solid #ffffff;
+            border-radius: 32px;
+            padding: 28px 20px;
+            width: 100%;
+            max-width: 460px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(255, 117, 143, 0.18);
+            z-index: 1;
+            position: relative;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .emoji-big {
+            font-size: 3rem;
+            margin-bottom: 6px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        h2 {
+            font-family: 'Mali', cursive;
+            color: #ff4d6d;
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        p {
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        p strong { color: #ff4d6d; }
+
+        .status-badge {
+            display: inline-block;
+            background: #fff0f3;
+            color: #ff4d6d;
+            border: 1.5px solid #ff8fa3;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        /* แถบเครื่องมือสุ่ม 5 ข้อ / ล้างค่า */
+        .quick-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .btn-mini {
+            background: #ffffff;
+            color: #ff4d6d;
+            border: 1.5px solid #ffb3c1;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-mini:hover {
+            background: #fff0f3;
+            border-color: #ff4d6d;
+        }
+
+        /* สเต็ป 1: รายการให้ติ๊กเลือก */
+        .select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            text-align: left;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .select-list::-webkit-scrollbar { width: 5px; }
+        .select-list::-webkit-scrollbar-track { background: #fff0f3; border-radius: 10px; }
+        .select-list::-webkit-scrollbar-thumb { background: #ffb3c1; border-radius: 10px; }
+
+        .select-item {
+            background: #ffffff;
+            border: 2px solid #ffe0e6;
+            border-radius: 16px;
+            padding: 11px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 3px 8px rgba(255, 117, 143, 0.06);
+        }
+        .select-item:hover:not(.disabled) {
+            border-color: #ff8fa3;
+            background: #fff8f9;
+        }
+        .select-item.checked {
+            background: #fff0f3;
+            border-color: #ff4d6d;
+            box-shadow: 0 4px 12px rgba(255, 77, 109, 0.16);
+        }
+        .select-item.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .select-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .select-icon { font-size: 1.35rem; }
+        .select-title {
+            font-family: 'Mali', cursive;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #4a4a4a;
+        }
+        .select-item.checked .select-title {
+            color: #ff4d6d;
+        }
+        .check-circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #ffb3c1;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .select-item.checked .check-circle {
+            background: #ff4d6d;
+            border-color: #ff4d6d;
+        }
+
+        /* สเต็ป 2: ตารางแผ่นป้ายสุ่ม 10 ป้าย */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 8px 0;
+        }
+        .mystery-card {
+            background: linear-gradient(135deg, #ff4d6d 0%, #ff758f 100%);
+            color: white;
+            border-radius: 18px;
+            padding: 14px 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 12px rgba(255, 77, 109, 0.22);
+            transition: all 0.3s ease;
+            min-height: 104px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px solid #ffe0e6;
+        }
+        .mystery-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(255, 77, 109, 0.32);
+        }
+        .mystery-card .card-front-icon {
+            font-size: 1.65rem;
+            margin-bottom: 3px;
+        }
+        .mystery-card .card-front-text {
+            font-family: 'Mali', cursive;
+            font-size: 0.86rem;
+            font-weight: 600;
+        }
+
+        /* ป้ายที่ถูกเปิดเลือก (2 ใบ) */
+        .mystery-card.revealed {
+            background: #fff0f3;
+            color: #c9184a;
+            border: 2.5px solid #ff4d6d;
+            box-shadow: 0 6px 18px rgba(255, 77, 109, 0.28);
+            transform: scale(1.02);
+            cursor: default;
+            pointer-events: none;
+            animation: popCard 0.4s ease;
+            z-index: 2;
+        }
+        .picked-tag {
+            background: #ff4d6d;
+            color: white;
+            font-size: 0.63rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+        }
+        .origin-tag {
+            font-size: 0.62rem;
+            padding: 1px 7px;
+            border-radius: 8px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+        .origin-chosen {
+            background: #ffe0e6;
+            color: #ff4d6d;
+        }
+        .origin-surprise {
+            background: #fff3cd;
+            color: #d97706;
+        }
+
+        /* ป้ายที่เหลืออีก 8 ใบที่พลิกเฉลย */
+        .mystery-card.missed {
+            background: #f8f9fa;
+            color: #777;
+            border: 1.5px dashed #d3d3d3;
+            box-shadow: none;
+            opacity: 0.78;
+            transform: scale(0.96);
+            cursor: default;
+            pointer-events: none;
+            animation: flipReveal 0.45s ease;
+        }
+        @keyframes popCard {
+            0% { transform: scale(0.85); }
+            60% { transform: scale(1.06); }
+            100% { transform: scale(1.02); }
+        }
+        @keyframes flipReveal {
+            0% { transform: rotateY(90deg) scale(0.92); opacity: 0.3; }
+            100% { transform: rotateY(0deg) scale(0.96); opacity: 0.78; }
+        }
+
+        /* กล่องสรุปผล */
+        .prize-result-box {
+            display: none;
+            background: #fff0f3;
+            border: 1.5px dashed #ff4d6d;
+            border-radius: 18px;
+            padding: 16px 14px;
+            margin-top: 16px;
+            color: #a4133c;
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.55;
+            animation: fadeIn 0.4s ease forwards;
+            text-align: left;
+        }
+        .result-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 11px 13px;
+            margin-bottom: 8px;
+            border: 1px solid #ffccd5;
+        }
+        .result-item:last-child { margin-bottom: 0; }
+
+        /* ปุ่มกด */
+        .btn-group {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.94rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(255, 77, 109, 0.28);
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            max-width: 280px;
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #9e9e9e;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        .btn-back-home {
+            background: none;
+            border: none;
+            color: #ff8fa3;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 4px;
+        }
+        .btn-back-home:hover { color: #ff4d6d; }
+
+        /* พลุหัวใจ */
+        .burst-heart {
+            position: fixed;
+            font-size: 1.8rem;
+            pointer-events: none;
+            z-index: 99;
+            animation: burstUp 1.5s ease-out forwards;
+        }
+        @keyframes burstUp {
+            0% { transform: translateY(0) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-180px) scale(1.4); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- สเต็ปที่ 1: เลือก 5 ข้อจาก 20 ข้อ -->
+        <div id="step-select">
+            <div class="emoji-big">🎀</div>
+            <h2>สุ่มดวงที่เบบี๋กำหนดเอง 💕</h2>
+            <p>จิ้มเลือกสิ่งที่อยากเล่นมา <strong>5 ข้อ</strong> จาก 20 ข้อนี้<br>แล้วเค้าจะแอบผสมเพิ่มอีก <strong>5 ข้อ</strong> รวมเป็น 10 ป้ายน้า คิคิ 😜</p>
+            
+            <div class="status-badge" id="select-counter">เลือกแล้ว: 0 / 5 ข้อ</div>
+
+            <div class="quick-actions">
+                <button class="btn-mini" onclick="randomPickFive()">ให้เค้าสุ่มเลือก 5 ข้อ 🎲</button>
+                <button class="btn-mini" onclick="clearAll()">ล้างที่เลือก</button>
+            </div>
+
+            <div class="select-list" id="select-list"></div>
+
+            <div class="btn-group">
+                <button class="btn" id="start-draw-btn" disabled onclick="startDrawPhase()">เอาไปซ่อนเป็น 10 ป้ายเลย ✨</button>
+                <a href="index.html" class="btn-back-home">← กลับหน้าหลัก</a>
+            </div>
+        </div>
+
+        <!-- สเต็ปที่ 2: สุ่มเปิด 2 ป้ายจากทั้งหมด 10 ป้าย -->
+        <div id="step-draw" style="display: none;">
+            <div class="emoji-big">🎁</div>
+            <h2>ผสมครบ 10 ป้ายแล้วน้าาา!</h2>
+            <p>ในนี้มี <strong>5 ป้ายที่เบบี๋เลือก</strong> + <strong>5 ป้ายที่เค้าใส่</strong> 🙈<br>เลือกเปิดได้แค่ <strong>2 ใน 10 ป้าย</strong> เท่านั้น... จิ้มเลย!</p>
+            
+            <div class="status-badge" id="pick-counter">เลือกเปิดได้อีก: 2 ป้าย</div>
+
+            <div class="cards-grid" id="mystery-grid"></div>
+
+            <div class="prize-result-box" id="prize-result"></div>
+
+            <div class="btn-group">
+                <button class="btn" id="reset-btn" style="display: none;" onclick="backToSelect()">กลับไปเลือก 5 ข้อใหม่ 🔄</button>
+                <a href="index.html" class="btn-back-home">← กลับหน้าหลัก</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // หัวใจลอยพื้นหลัง
+        function createHearts() {
+            const hearts = ['❤️', '💖', '💕', '🌸', '✨', '🎀'];
+            for (let i = 0; i < 16; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-bg';
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 16 + 14) + 'px';
+                heart.style.animationDuration = (Math.random() * 6 + 6) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        // รายการตัวเลือกทั้งหมด 20 ข้อ
+        const allOptions = [
+            { id: 0, icon: '🙈', title: 'ปิดตาห้ามแอบดู', desc: 'ปิดตาไว้เฉย ๆ เดี๋ยวเค้าจัดการเองทั้งหมด 💋' },
+            { id: 1, icon: '🔥', title: 'คืนนี้เบบี๋คุมเกมเอง', desc: 'ตามใจเบบี๋ทุกอย่าง เค้ายอมหมดเลย 🙈' },
+            { id: 2, icon: '💦', title: 'อ๊อกให้เบบี๋ 1 ที', desc: 'งั่มมม จัดให้ตามคำขอเลยค้าบบ 😈' },
+            { id: 3, icon: '💋', title: 'จุ้บซอกคอ 10 ที', desc: 'ห้ามดิ้น ห้ามหนี ให้อยู่นิ่ง ๆ ให้จุ้บจนกว่าจะครบ 😘' },
+            { id: 4, icon: '💆‍♂️', title: 'นวดผ่อนคลายให้เค้า', desc: 'นวดให้ก่อน เดี๋ยวมีรางวัลตอบแทนชุดใหญ่ 😜' },
+            { id: 5, icon: '🫦', title: 'ถอดออก 1 ชิ้นเดี๋ยวนี้!', desc: 'ไม่ว่าจะใส่อะไรอยู่ ถอดออก 1 ชิ้นทันที ห้ามโกง 🔥' },
+            { id: 6, icon: '😈', title: 'เงี่ยนก็จัดเล้ยยย', desc: 'ไม่ต้องรอฤกษ์งามยามดี เริ่มเลยละกัน 💥' },
+            { id: 7, icon: '🤫', title: 'ห้ามส่งเสียงดัง!', desc: 'คืนนี้ต้องเล่นแบบเงียบ ๆ ห้ามหลุดเสียงออกมาเด็ดขาด 🙈' },
+            { id: 8, icon: '🕯️', title: 'เปิดไฟสลัว ๆ บรรยากาศได้', desc: 'ปิดไฟใหญ่ให้หมด เหลือแค่แสงสลัว ๆ ให้พอเห็นลาง ๆ 🍷' },
+            { id: 9, icon: '🫣', title: 'ลองท่าใหม่ที่ไม่เคยทำ', desc: 'คืนนี้ขอเปลี่ยนบรรยากาศ จัดท่าใหม่ไปเลย 🔥' },
+            { id: 10, icon: '👄', title: 'แลกลิ้นยาว ๆ 1 นาทีเต็ม', desc: 'จับเวลา 60 วินาที ห้ามถอนปากออกก่อนหมดเวลา 😘' },
+            { id: 11, icon: '⛓️', title: 'โดนมัดมือห้ามขยับ', desc: 'อยู่นิ่ง ๆ เป็นเด็กดี เดี๋ยวเค้าดูแลเองทั้งหมด 😈' },
+            { id: 12, icon: '🧊', title: 'เล่นกับน้ำแข็ง 1 ก้อน', desc: 'เอาน้ำแข็งมาลูบไล้ให้เย็นยะเยือกสลับกับความร้อน 🔥' },
+            { id: 13, icon: '🚿', title: 'อาบน้ำด้วยกันรอบดึก', desc: 'เข้าห้องน้ำพร้อมกัน ถูสบู่ให้กันแบบละเอียดทุกซอก 💦' },
+            { id: 14, icon: '🗣️', title: 'กระซิบข้างหูบอกสิ่งที่อยากทำ', desc: 'พูดเบา ๆ ข้างหูว่าคืนนี้อยากโดนอะไรบ้าง 🙈' },
+            { id: 15, icon: '🍑', title: 'ตีก้นเบา ๆ 5 ทีโทษฐานน่ารัก', desc: 'หันหลังมาซะดี ๆ โดนทำโทษซะหน่อย 😜' },
+            { id: 16, icon: '⏱️', title: 'ห้ามเสร็จก่อนเด็ดขาด!', desc: 'ต้องอดทนรอจนกว่าเค้าจะอนุญาต ห้ามแอบชิงตัดหน้า 😈' },
+            { id: 17, icon: '🛏️', title: 'จัดต่ออีก 1 ยกห้ามอู้', desc: 'จบยกแรกแล้วห้ามหลับ ขอต่ออีกยกทันที 💥' },
+            { id: 18, icon: '😝', title: 'ว้ายยย อดแจ๊ะ!', desc: 'ดวงกุดเปิดโดนตัวหลอก รอบนี้อดไปก่อนนะจ๊ะ 😜' },
+            { id: 19, icon: '😴', title: 'ห่มผ้านอนกอดเฉยๆ', desc: 'คืนนี้เป็นเด็กดี นอนกอดกันเฉยๆ ห้ามซน 🛌' }
+        ];
+
+        const exactSelect = 5;    // ให้เลือก 5 ใน 20
+        const extraSurprise = 5;  // สุ่มเพิ่มอีก 5 รวมเป็น 10 ป้าย
+        const maxPicks = 2;       // เปิดได้แค่ 2 ใน 10
+        let selectedIds = new Set();
+        let tenCardsPool = [];
+        let pickedCards = [];
+
+        // สร้างรายการให้ติ๊กเลือกในสเต็ปที่ 1
+        function renderSelectList() {
+            const listEl = document.getElementById('select-list');
+            listEl.innerHTML = '';
+            const isFull = selectedIds.size >= exactSelect;
+
+            allOptions.forEach(opt => {
+                const isChecked = selectedIds.has(opt.id);
+                const item = document.createElement('div');
+                item.className = 'select-item' + (isChecked ? ' checked' : '') + (!isChecked && isFull ? ' disabled' : '');
+                item.innerHTML = `
+                    <div class="select-item-left">
+                        <span class="select-icon">${opt.icon}</span>
+                        <span class="select-title">${opt.title}</span>
+                    </div>
+                    <div class="check-circle">${isChecked ? '✓' : ''}</div>
+                `;
+                item.onclick = () => toggleOption(opt.id);
+                listEl.appendChild(item);
+            });
+            updateSelectUI();
+        }
+
+        function toggleOption(id) {
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+                renderSelectList();
+            } else if (selectedIds.size < exactSelect) {
+                selectedIds.add(id);
+                renderSelectList();
+            }
+        }
+
+        function randomPickFive() {
+            selectedIds.clear();
+            const shuffled = [...allOptions].sort(() => Math.random() - 0.5);
+            shuffled.slice(0, exactSelect).forEach(opt => selectedIds.add(opt.id));
+            renderSelectList();
+        }
+
+        function clearAll() {
+            selectedIds.clear();
+            renderSelectList();
+        }
+
+        function updateSelectUI() {
+            const count = selectedIds.size;
+            const counterEl = document.getElementById('select-counter');
+            const startBtn = document.getElementById('start-draw-btn');
+
+            if (count < exactSelect) {
+                counterEl.innerText = `เลือกแล้ว: ${count} / ${exactSelect} ข้อ (เลือกอีก ${exactSelect - count} ข้อ)`;
+                counterEl.style.background = '#fff0f3';
+                counterEl.style.color = '#ff4d6d';
+                startBtn.disabled = true;
+            } else {
+                counterEl.innerText = `เลือกครบ ${exactSelect} / ${exactSelect} ข้อแล้ว! 💕`;
+                counterEl.style.background = '#ff4d6d';
+                counterEl.style.color = '#ffffff';
+                startBtn.disabled = false;
+            }
+        }
+
+        // เข้าสู่สเต็ปที่ 2: เอา 5 ข้อที่เลือก + สุ่มอีก 5 ข้อที่ไม่ได้เลือก รวมเป็น 10 ป้าย
+        function startDrawPhase() {
+            if (selectedIds.size !== exactSelect) return;
+
+            const userChosen = allOptions
+                .filter(opt => selectedIds.has(opt.id))
+                .map(opt => ({ ...opt, isUserChoice: true }));
+
+            const remainingOptions = allOptions.filter(opt => !selectedIds.has(opt.id));
+            const hiddenFive = [...remainingOptions]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, extraSurprise)
+                .map(opt => ({ ...opt, isUserChoice: false }));
+
+            tenCardsPool = [...userChosen, ...hiddenFive].sort(() => Math.random() - 0.5);
+            pickedCards = [];
+
+            document.getElementById('step-select').style.display = 'none';
+            document.getElementById('step-draw').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const mysteryGrid = document.getElementById('mystery-grid');
+            mysteryGrid.innerHTML = '';
+
+            const counterEl = document.getElementById('pick-counter');
+            counterEl.innerText = `เลือกเปิดได้อีก: ${maxPicks} ป้าย (จาก 10 ป้าย)`;
+            counterEl.style.background = '#fff0f3';
+            counterEl.style.color = '#ff4d6d';
+
+            document.getElementById('prize-result').style.display = 'none';
+            document.getElementById('reset-btn').style.display = 'none';
+
+            tenCardsPool.forEach((prize, index) => {
+                const card = document.createElement('div');
+                card.className = 'mystery-card';
+                card.dataset.index = index;
+                card.innerHTML = `
+                    <div class="card-front-icon">❓</div>
+                    <div class="card-front-text">ป้ายที่ ${index + 1}</div>
+                `;
+                card.onclick = () => revealPrize(card, prize);
+                mysteryGrid.appendChild(card);
+            });
+        }
+
+        function revealPrize(selectedCard, prize) {
+            if (pickedCards.length >= maxPicks || selectedCard.classList.contains('revealed')) return;
+            
+            pickedCards.push({ card: selectedCard, prize: prize });
+            const remaining = maxPicks - pickedCards.length;
+
+            const originBadge = prize.isUserChoice 
+                ? `<span class="origin-tag origin-chosen">ที่เบบี๋เลือกเอง 💕</span>` 
+                : `<span class="origin-tag origin-surprise">เค้าใส่ไว้ 😜</span>`;
+
+            // เปิดป้ายที่เลือก
+            selectedCard.classList.add('revealed');
+            selectedCard.innerHTML = `
+                <span class="picked-tag">เปิดใบที่ ${pickedCards.length} ✨</span>
+                <div style="font-size: 1.55rem; margin-bottom: 2px;">${prize.icon}</div>
+                <div style="font-family: 'Mali', cursive; font-weight: 700; font-size: 0.82rem; line-height: 1.2;">${prize.title}</div>
+                ${originBadge}
+            `;
+
+            const counterEl = document.getElementById('pick-counter');
+            if (remaining > 0) {
+                counterEl.innerText = `เลือกเปิดได้อีก ${remaining} ป้าย ลุ้นๆ 👀`;
+            } else {
+                counterEl.innerText = `เปิดครบ 2 ป้ายแล้ว! มาดูเฉลยอีก 8 ป้ายที่เหลือ 😜`;
+                counterEl.style.background = '#ff4d6d';
+                counterEl.style.color = '#ffffff';
+                burstHearts(18);
+
+                // พลิกเฉลยป้ายที่เหลืออีก 8 ใบ
+                setTimeout(() => {
+                    document.querySelectorAll('.mystery-card').forEach(c => {
+                        if (!c.classList.contains('revealed')) {
+                            const idx = c.dataset.index;
+                            const otherPrize = tenCardsPool[idx];
+                            const subLabel = otherPrize.isUserChoice ? 'ที่เลือกไว้' : 'เค้าใส่';
+                            c.classList.add('missed');
+                            c.innerHTML = `
+                                <div style="font-size: 1.3rem; margin-bottom: 2px; opacity: 0.8;">${otherPrize.icon}</div>
+                                <div style="font-family: 'Mali', cursive; font-weight: 600; font-size: 0.73rem; line-height: 1.2;">${otherPrize.title}</div>
+                                <div style="font-size: 0.6rem; opacity: 0.75; margin-top: 2px;">(${subLabel})</div>
+                            `;
+                        }
+                    });
+                }, 450);
+
+                // แสดงสรุปผลทั้ง 2 อย่าง
+                const resultBox = document.getElementById('prize-result');
+                resultBox.style.display = 'block';
+                resultBox.innerHTML = `
+                    <div style="text-align: center; font-size: 1rem; margin-bottom: 10px; color: #ff4d6d;">🎉 <strong>ผลสุ่มดวงของเบบี๋คืนนี้:</strong></div>
+                    <div class="result-item">
+                        <div style="color: #ff4d6d;">1️⃣ <strong>${pickedCards[0].prize.title}</strong> <span style="font-size: 0.75rem; color: #ff758f;">(${pickedCards[0].prize.isUserChoice ? 'ที่เลือกเอง' : 'เค้าใส่'})</span></div>
+                        <div style="font-weight: 400; font-size: 0.83rem; color: #666; margin-top: 3px;">${pickedCards[0].prize.desc}</div>
+                    </div>
+                    <div class="result-item">
+                        <div style="color: #ff4d6d;">2️⃣ <strong>${pickedCards[1].prize.title}</strong> <span style="font-size: 0.75rem; color: #ff758f;">(${pickedCards[1].prize.isUserChoice ? 'ที่เลือกเอง' : 'เค้าใส่'})</span></div>
+                        <div style="font-weight: 400; font-size: 0.83rem; color: #666; margin-top: 3px;">${pickedCards[1].prize.desc}</div>
+                    </div>
+                `;
+
+                document.getElementById('reset-btn').style.display = 'inline-block';
+            }
+        }
+
+        function backToSelect() {
+            document.getElementById('step-draw').style.display = 'none';
+            document.getElementById('step-select').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function burstHearts(count) {
+            const emojis = ['❤️', '💖', '🥰', '💕', '😘', '✨'];
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'burst-heart';
+                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = (Math.random() * 80 + 10) + 'vw';
+                    el.style.top = (Math.random() * 40 + 45) + 'vh';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 1500);
+                }, i * 60);
+            }
+        }
+
+        renderSelectList();
+    </script>
+</body>
+</html>
