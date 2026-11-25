@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You App ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            color: #4a4a4a;
+            padding: 20px;
+        }
+
+        /* หัวใจลอยพื้นหลัง */
+        .heart-bg {
+            position: fixed;
+            color: rgba(255, 117, 143, 0.25);
+            animation: floatUp linear infinite;
+            user-select: none;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.8); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        /* กรอบแอปหลัก */
+        .app-container {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 2px solid #ffffff;
+            border-radius: 32px;
+            padding: 32px 20px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(255, 117, 143, 0.18);
+            z-index: 1;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .emoji-big {
+            font-size: 3.4rem;
+            margin-bottom: 14px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        h1, h2 {
+            font-family: 'Mali', cursive;
+            color: #ff4d6d;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.3rem; }
+
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* หน้าต่างแอป 4 ช่อง (2x2 Grid) */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .app-tile {
+            background: #ffffff;
+            border: 2px solid #ffe0e6;
+            border-radius: 24px;
+            padding: 22px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 6px 16px rgba(255, 117, 143, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .app-tile:hover {
+            transform: translateY(-4px);
+            border-color: #ff758f;
+            box-shadow: 0 10px 22px rgba(255, 77, 109, 0.2);
+        }
+        .app-tile:active {
+            transform: scale(0.96);
+        }
+
+        .app-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .app-name {
+            font-family: 'Mali', cursive;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ff4d6d;
+            margin-bottom: 4px;
+        }
+        .app-desc {
+            font-size: 0.78rem;
+            color: #888;
+        }
+        .badge-done {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* ปุ่มกดทั่วไป */
+        .btn {
+            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+            color: white;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 50px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(255, 77, 109, 0.28);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.38);
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn-secondary {
+            background: #ffffff;
+            color: #ff4d6d;
+            border: 2px solid #ff8fa3;
+            box-shadow: none;
+        }
+        .btn-back-home {
+            margin-top: 18px;
+            background: none;
+            border: none;
+            color: #ff8fa3;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .btn-back-home:hover {
+            color: #ff4d6d;
+        }
+
+        /* ส่วนย่อยในแอปที่ 1 */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .quiz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin-bottom: 14px;
+        }
+        .quiz-btn {
+            width: 100%;
+            background: #ffffff;
+            color: #ff4d6d;
+            border: 2px solid #ffb3c1;
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .quiz-btn.wrong {
+            background: #f5f5f5;
+            color: #aaa;
+            border-color: #e0e0e0;
+            pointer-events: none;
+        }
+        .date-badge {
+            display: inline-block;
+            background: #ff4d6d;
+            color: white;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .reply-box {
+            display: none;
+            background: #fff0f3;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 16px;
+            color: #ff4d6d;
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .highlight-box {
+            background: #fff0f3;
+            border-radius: 18px;
+            padding: 16px 14px;
+            margin-bottom: 14px;
+            border: 1.5px dashed #ff8fa3;
+        }
+        .event-title {
+            font-size: 0.86rem;
+            color: #666;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .ymd-text {
+            font-family: 'Mali', cursive;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ff4d6d;
+            display: block;
+            margin: 4px 0;
+        }
+        .sub-days {
+            font-size: 0.85rem;
+            color: #ff758f;
+            font-weight: 600;
+        }
+
+        /* ส่วนย่อยในแอปที่ 2 (This or That) */
+        .tot-step-badge {
+            display: inline-block;
+            background: #fff0f3;
+            color: #ff4d6d;
+            border: 1.5px solid #ff8fa3;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .tot-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .tot-option {
+            background: #ffffff;
+            border: 2px solid #ffb3c1;
+            border-radius: 20px;
+            padding: 16px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Mali', cursive;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ff4d6d;
+            box-shadow: 0 4px 12px rgba(255, 117, 143, 0.1);
+        }
+        .tot-option:hover {
+            transform: translateY(-2px);
+            border-color: #ff4d6d;
+            background: #fff8f9;
+        }
+        .tot-option.selected {
+            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+            color: #ffffff;
+            border-color: #ff4d6d;
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(255, 77, 109, 0.3);
+        }
+        .tot-option.unselected {
+            opacity: 0.45;
+            transform: scale(0.97);
+        }
+        .tot-or {
+            font-family: 'Mali', cursive;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #ff8fa3;
+            margin: -4px 0;
+        }
+        .tot-summary-item {
+            background: #ffffff;
+            border: 1px solid #ffccd5;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            font-size: 0.86rem;
+            color: #4a4a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* แผ่นป้ายสุ่มในแอปที่ 3 (10 ป้าย เลือกได้ 2 ป้าย) */
+        .pick-counter {
+            display: inline-block;
+            background: #fff0f3;
+            color: #ff4d6d;
+            border: 1.5px solid #ff8fa3;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .mystery-card {
+            background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 14px 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 12px rgba(201, 24, 74, 0.22);
+            transition: all 0.3s ease;
+            min-height: 98px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1.5px solid #ffccd5;
+        }
+        .mystery-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(255, 77, 109, 0.32);
+        }
+        .mystery-card .card-front-icon {
+            font-size: 1.65rem;
+            margin-bottom: 2px;
+        }
+        .mystery-card .card-front-text {
+            font-family: 'Mali', cursive;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ป้ายที่ถูกเลือก (2 ใบ) */
+        .mystery-card.revealed {
+            background: #fff0f3;
+            color: #c9184a;
+            border: 2.5px solid #ff4d6d;
+            box-shadow: 0 6px 18px rgba(255, 77, 109, 0.28);
+            transform: scale(1.03);
+            cursor: default;
+            pointer-events: none;
+            animation: popCard 0.4s ease;
+            z-index: 2;
+        }
+        .picked-tag {
+            background: #ff4d6d;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 3px;
+        }
+
+        /* ป้ายที่เหลืออีก 8 ใบที่พลิกเฉลยตามหลัง */
+        .mystery-card.missed {
+            background: #f8f9fa;
+            color: #777;
+            border: 1.5px dashed #d3d3d3;
+            box-shadow: none;
+            opacity: 0.78;
+            transform: scale(0.96);
+            cursor: default;
+            pointer-events: none;
+            animation: flipReveal 0.45s ease;
+        }
+        @keyframes popCard {
+            0% { transform: scale(0.85); }
+            60% { transform: scale(1.08); }
+            100% { transform: scale(1.03); }
+        }
+        @keyframes flipReveal {
+            0% { transform: rotateY(90deg) scale(0.92); opacity: 0.3; }
+            100% { transform: rotateY(0deg) scale(0.96); opacity: 0.78; }
+        }
+
+        .prize-result-box {
+            display: none;
+            background: #fff0f3;
+            border: 1.5px dashed #ff4d6d;
+            border-radius: 16px;
+            padding: 14px;
+            margin-top: 12px;
+            color: #a4133c;
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.55;
+            animation: fadeIn 0.4s ease forwards;
+            text-align: left;
+        }
+
+        /* ส่วนย่อยในแอปที่ 4: จดหมายความในใจ (รวมจากไฟล์ next) */
+        .envelope-emoji {
+            font-size: 4.5rem;
+            margin-bottom: 14px;
+            display: inline-block;
+            animation: wiggle 2.2s infinite;
+            cursor: pointer;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-6deg) scale(1.05); }
+            50% { transform: rotate(6deg) scale(1.05); }
+            75% { transform: rotate(-3deg) scale(1.02); }
+        }
+
+        .letter-paper {
+            background: #fffafb;
+            border: 1.5px dashed #ff9ebb;
+            border-radius: 20px;
+            padding: 22px 18px;
+            text-align: left;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(255, 182, 193, 0.15);
+            animation: unfold 0.7s ease forwards;
+        }
+        @keyframes unfold {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .letter-header {
+            font-family: 'Mali', cursive;
+            color: #ff4d6d;
+            font-size: 1.22rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            text-align: center;
+            border-bottom: 1px solid #ffe0e6;
+            padding-bottom: 10px;
+        }
+
+        .letter-paper p {
+            font-size: 0.94rem;
+            line-height: 1.8;
+            color: #4a4a4a;
+            margin-bottom: 12px;
+            text-indent: 1.2em;
+        }
+        .letter-paper p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-text {
+            color: #ff4d6d;
+            font-weight: 600;
+        }
+
+        .letter-closing {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed #ffd1dc;
+            font-family: 'Mali', cursive;
+            color: #ff4d6d;
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .hug-reply {
+            display: none;
+            margin-top: 14px;
+            background: #fff0f3;
+            color: #ff4d6d;
+            padding: 13px 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.96rem;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        /* หัวใจพุ่งตอนกดปุ่ม */
+        .burst-heart {
+            position: fixed;
+            font-size: 1.8rem;
+            pointer-events: none;
+            z-index: 99;
+            animation: burstUp 1.5s ease-out forwards;
+        }
+        @keyframes burstUp {
+            0% { transform: translateY(0) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-180px) scale(1.4); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- หน้าจอที่ 0: เกริ่นนำก่อนเข้าแอป -->
+        <div class="screen active" id="screen-intro">
+            <div class="emoji-big">💝</div>
+            <h1>เค้าไม่รู้จะให้อะไรดี...</h1>
+            <p>เลยตั้งใจทำสิ่งนี้มาให้นะ ^^</p>
+            <button class="btn" onclick="openScreen('screen-home')">อะไรน้าาา</button>
+        </div>
+
+        <!-- หน้าจอหลัก: หน้าต่างแอป 4 ช่อง -->
+        <div class="screen" id="screen-home">
+            <div class="app-grid">
+                <!-- ช่องที่ 1: ทายวันแรกที่ทัก -->
+                <div class="app-tile" onclick="openScreen('screen-app1')">
+                    <span class="badge-done" id="badge-1"></span>
+                    <div class="app-icon">💬</div>
+                    <div class="app-name">จุดเริ่มต้น</div>
+                    <div class="app-desc">ยังจำได้ไหม ?</div>
+                </div>
+
+                <!-- ช่องที่ 2: This or That -->
+                <div class="app-tile" onclick="openScreen('screen-app2')">
+                    <span class="badge-done" id="badge-2"></span>
+                    <div class="app-icon">⚖️</div>
+                    <div class="app-name">เลือกอะไรดี?</div>
+                    <div class="app-desc">This or That 😜</div>
+                </div>
+
+                <!-- ช่องที่ 3: สุ่มดวง -->
+                <div class="app-tile" onclick="openScreen('screen-app3')">
+                    <span class="badge-done" id="badge-3"></span>
+                    <div class="app-icon">🎲</div>
+                    <div class="app-name">สุ่มดวง</div>
+                    <div class="app-desc">จะดวงดีหรือดวงกุด ?</div>
+                </div>
+
+                <!-- ช่องที่ 4: บอกความในใจ (รวมเข้ามาในหน้าเดียวกันแล้ว) -->
+                <div class="app-tile" onclick="openScreen('screen-app4')">
+                    <span class="badge-done" id="badge-4"></span>
+                    <div class="app-icon">💌</div>
+                    <div class="app-name">ความในใจ</div>
+                    <div class="app-desc">อยากบอกเบบี๋</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- แอปที่ 1: ทายวันแรกที่ทัก + สรุปเวลาคบกัน -->
+        <div class="screen" id="screen-app1">
+            <div class="emoji-big" id="app1-emoji" style="font-size: 2.8rem;">💬</div>
+            <h2 id="app1-title">จำวันแรกที่เค้าทักเบบี๋ได้ไหม ?</h2>
+
+            <div class="reply-box" id="remember-reply"></div>
+
+            <!-- สเต็ปที่ 1: ถามว่ารู้ไหม -->
+            <div class="btn-group" id="remember-choices">
+                <button class="btn" onclick="startQuiz('จำได้จริงอ๊ะเปล่าา วันไหนเอ่ย? 🤔', '🧐')">จำได้ 💕</button>
+                <button class="btn btn-secondary" onclick="teaseStep1()">จำไม่ได้ 🙈</button>
+            </div>
+
+            <!-- สเต็ปแกล้งขู่รอบ 1 -->
+            <div class="btn-group" id="tease-choices-1" style="display: none;">
+                <button class="btn" onclick="startQuiz('ฮั่นแน่! รีบจำได้เลยนะ 😜 วันไหนเอ่ย?', '😏')">จำได้แล้วๆ ล้อเล่น! 😜</button>
+                <button class="btn btn-secondary" onclick="askKissStep()">จำไม่ได้จริงๆ ง่ะ 🥺</button>
+            </div>
+
+            <!-- สเต็ปอ้อนขอจุ้บก่อนเฉลย -->
+            <div class="btn-group" id="kiss-choices" style="display: none;">
+                <button class="btn" onclick="revealAfterKiss()">จุ้บแล้วค้าบบ 😘💕</button>
+            </div>
+
+            <!-- ตัวเลือกวันที่ -->
+            <div class="quiz-list" id="quiz-choices" style="display: none;">
+                <button class="quiz-btn" onclick="checkDate(false, this)">14 กันยายน 2567</button>
+                <button class="quiz-btn" onclick="checkDate(true, this)">28 กันยายน 2567</button>
+                <button class="quiz-btn" onclick="checkDate(false, this)">28 ตุลาคม 2567</button>
+                <button class="quiz-btn" onclick="checkDate(false, this)">18 กันยายน 2567</button>
+            </div>
+
+            <!-- สรุปเวลาคบกัน (โชว์หลังทายเสร็จ) -->
+            <div id="app1-summary" style="display: none;">
+                <div class="highlight-box">
+                    <span class="event-title">วันที่เค้าทักหาเบบี๋</span>
+                    <div class="date-badge">28 กันยายน 2567</div>
+                    <span class="event-title" style="margin-top: 4px;">ใช้เวลาทำความรู้จักกันทั้งหมด</span>
+                    <span class="ymd-text" id="talk-ymd">1 ปี 4 เดือน 18 วัน</span>
+                    <span class="sub-days">(ทั้งหมด <span id="talk-days">505 วัน</span> 💕)</span>
+                </div>
+
+                <div class="highlight-box">
+                    <span class="event-title">วันที่เบบี๋ขอเค้าเป็นแฟน</span>
+                    <div class="date-badge">15 กุมภาพันธ์ 2569</div>
+                    <span class="event-title" style="margin-top: 4px;">คบกันมาจนถึงวันนี้แล้ว</span>
+                    <span class="ymd-text" id="love-ymd">0 วัน</span>
+                    <span class="sub-days">(ทั้งหมด <span id="love-days">0 วัน</span> 🥰)</span>
+                </div>
+            </div>
+
+            <div>
+                <button class="btn-back-home" onclick="openScreen('screen-home')">← กลับหน้าหลัก</button>
+            </div>
+        </div>
+
+        <!-- แอปที่ 2: This or That -->
+        <div class="screen" id="screen-app2">
+            <div id="tot-play-area">
+                <div class="tot-step-badge" id="tot-step">ข้อที่ 1 / 5</div>
+                <div class="emoji-big" id="tot-emoji" style="font-size: 2.6rem; margin-bottom: 6px; display: block;">⚖️</div>
+                <h2 id="tot-question">ถ้าให้เลือก... เบบี๋เลือกอะไร?</h2>
+
+                <div class="tot-cards">
+                    <div class="tot-option" id="tot-opt-a" onclick="selectTot(0)"></div>
+                    <div class="tot-or">— หรือ —</div>
+                    <div class="tot-option" id="tot-opt-b" onclick="selectTot(1)"></div>
+                </div>
+
+                <div class="reply-box" id="tot-reply"></div>
+
+                <button class="btn" id="tot-next-btn" style="display: none;" onclick="nextTot()">ข้อต่อไป ➜</button>
+            </div>
+
+            <!-- หน้าสรุปผลหลังเล่นครบ -->
+            <div id="tot-result-area" style="display: none;">
+                <div class="emoji-big" style="font-size: 2.8rem; margin-bottom: 6px;">😈</div>
+                <h2>คำตอบของเบบี๋</h2>
+                <div id="tot-summary-list" style="text-align: left; margin-bottom: 14px;"></div>
+                <button class="btn btn-secondary" style="font-size: 0.85rem; padding: 8px 18px;" onclick="resetTot()">เล่นอีกรอบ 🔄</button>
+            </div>
+
+            <div>
+                <button class="btn-back-home" onclick="openScreen('screen-home')">← กลับหน้าหลัก</button>
+            </div>
+        </div>
+
+        <!-- แอปที่ 3: สุ่มดวง (10 ป้าย เลือก 2 ป้าย) -->
+        <div class="screen" id="screen-app3">
+            <div class="emoji-big" style="font-size: 2.6rem; margin-bottom: 4px;">🎲</div>
+            <h2>สุ่มดวงวัดใจ 10 ป้าย</h2>
+            <p style="margin-bottom: 8px; font-size: 0.88rem;">จะดวงดีหรือดวงกุดน้าาา มาวัดดวงกันหน่อย! 😜<br>เลือกเปิดได้แค่ <strong>2 ป้ายเท่านั้น</strong>... จิ้มเลย!</p>
+            
+            <div class="pick-counter" id="pick-counter">เลือกป้ายได้อีก: 2 ป้าย</div>
+
+            <div class="cards-grid" id="mystery-grid"></div>
+
+            <div class="prize-result-box" id="prize-result"></div>
+
+            <div>
+                <button class="btn-back-home" onclick="openScreen('screen-home')">← กลับหน้าหลัก</button>
+            </div>
+        </div>
+
+        <!-- แอปที่ 4: ความในใจ (จดหมายจากไฟล์ next) -->
+        <div class="screen" id="screen-app4">
+            <!-- ส่วนซองจดหมาย (แสดงตอนแรก) -->
+            <div id="envelope-section">
+                <div class="envelope-emoji" onclick="openLetter()">💌</div>
+                <h1>เบบี๋... เค้ามีอะไรอยากบอก</h1>
+                <button class="btn" onclick="openLetter()">เปิดอ่าน 💖</button>
+            </div>
+
+            <!-- ส่วนเนื้อหาจดหมาย (แสดงหลังกดเปิด) -->
+            <div id="letter-section" style="display: none;">
+                <div class="letter-paper">
+                    <div class="letter-header">เบบี๋... เค้ามีอะไรอยากบอก ❤️</div>
+                    <p>
+                        ตั้งแต่คบกันมา <span class="highlight-text">เค้าขอโทษนะที่บางทีทำตัวไม่น่ารัก</span>หรือทำให้เบบี๋ต้องเหนื่อยใจเพราะเค้า เค้าไม่กล้าสัญญาอะไร เพราะกลัวทำไม่ได้แล้วเบบี๋จะผิดหวัง<span class="highlight-text">แต่เค้าจะพยายามปรับให้ดีขึ้น</span>
+                    </p>
+                    <p>
+                        <span class="highlight-text">ขอบคุณมากๆ เลยนะที่ใจดีกับเค้าขนาดนี้</span> ถึงเค้าจะไม่น่ารักบ้างแต่เบบี๋ก็ไม่เคยทิ้งเค้าไปไหน ขอบคุณที่ชัดเจนกับเค้าตั้งแต่วันแรกจนถึงวันนี้ <span class="highlight-text">ขอบคุณที่เลือกเค้า แล้วก็คอยดูแลเค้าทุกอย่างเลย</span>
+                    </p>
+                    <p>
+                        เบบี๋ทำงานมาทั้งอาทิตย์ ได้หยุดแค่วันเดียว ก็ยังขับรถไกลๆ มาหา พาไปเที่ยว ถ่ายรูปให้<span class="highlight-text">แค่ได้อยู่ด้วยกันแค่นี้เค้าก็มีความสุขมากๆ แล้ว</span>
+                    </p>
+                    <div class="letter-closing">
+                        อยู่ด้วยกันแบบนี้ไปนานๆ นะเบบี๋ ไปเที่ยวด้วยกัน กินข้าวด้วยกัน ใช้เวลาด้วยกันไปเรื่อยๆ เลยน้า 🥺❤️
+                    </div>
+                </div>
+
+                <button class="btn" id="hug-btn" onclick="sendHug()">ขอกอดหน่อย 🥺🤍</button>
+                <div class="hug-reply" id="hug-reply">เค้ารักเบบี๋น้าาา 🥰💖</div>
+            </div>
+
+            <div>
+                <button class="btn-back-home" onclick="openScreen('screen-home')">← กลับหน้าหลัก</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // หัวใจลอยพื้นหลัง
+        function createHearts() {
+            const hearts = ['❤️', '💖', '💕', '🌸', '🔥'];
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-bg';
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 16 + 14) + 'px';
+                heart.style.animationDuration = (Math.random() * 6 + 6) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        // สลับหน้าจอแอป
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // คำนวณ ปี เดือน วัน
+        function formatYMD(start, end) {
+            if (end < start) return '0 วัน';
+            let years = end.getFullYear() - start.getFullYear();
+            let months = end.getMonth() - start.getMonth();
+            let days = end.getDate() - start.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            const parts = [];
+            if (years > 0) parts.push(years + ' ปี');
+            if (months > 0) parts.push(months + ' เดือน');
+            if (days > 0) parts.push(days + ' วัน');
+            return parts.length > 0 ? parts.join(' ') : '0 วัน';
+        }
+
+        const startTalk = new Date(2024, 8, 28);
+        const startLove = new Date(2026, 1, 15);
+        const today = new Date();
+        const oneDay = 1000 * 60 * 60 * 24;
+
+        document.getElementById('talk-ymd').innerText = formatYMD(startTalk, startLove);
+        document.getElementById('talk-days').innerText = Math.round((startLove - startTalk) / oneDay) + ' วัน';
+        document.getElementById('love-ymd').innerText = formatYMD(startLove, today);
+        document.getElementById('love-days').innerText = Math.max(0, Math.floor((today - startLove) / oneDay)) + ' วัน';
+
+        // ลอจิกแอปที่ 1 (แกล้งขู่ -> อ้อนขอจุ้บ -> เฉลย)
+        function teaseStep1() {
+            document.getElementById('remember-choices').style.display = 'none';
+            document.getElementById('app1-emoji').innerText = '😤';
+            document.getElementById('app1-title').innerText = 'ได้! วันนี้ไม่ต้องแจ๊ะ! 🙅‍♂️💢';
+            document.getElementById('tease-choices-1').style.display = 'flex';
+        }
+
+        function askKissStep() {
+            document.getElementById('tease-choices-1').style.display = 'none';
+            document.getElementById('app1-emoji').innerText = '🥺';
+            document.getElementById('app1-title').innerText = 'งั้นต้องจุ้บเค้าก่อน ถึงจะยอมเฉลยให้! 😘';
+            document.getElementById('kiss-choices').style.display = 'flex';
+        }
+
+        function revealAfterKiss() {
+            document.getElementById('kiss-choices').style.display = 'none';
+            document.getElementById('app1-title').style.display = 'none';
+            document.getElementById('app1-emoji').innerText = '🥰';
+            const reply = document.getElementById('remember-reply');
+            reply.style.display = 'block';
+            reply.innerText = 'เย้ คิคิ เฉลยยย ! 💕';
+            document.getElementById('app1-summary').style.display = 'block';
+            document.getElementById('badge-1').innerText = '✅';
+        }
+
+        function startQuiz(titleText, emojiIcon) {
+            document.getElementById('remember-choices').style.display = 'none';
+            document.getElementById('tease-choices-1').style.display = 'none';
+            document.getElementById('kiss-choices').style.display = 'none';
+            document.getElementById('remember-reply').style.display = 'none';
+            document.getElementById('app1-emoji').innerText = emojiIcon;
+            document.getElementById('app1-title').innerText = titleText;
+            document.getElementById('quiz-choices').style.display = 'flex';
+        }
+
+        let wrongCount = 0;
+        const wrongMessages = [
+            'ยังไม่ใช่ค้าบบ ลองนึกดูใหม่ซิ 😜',
+            'เอ๊ะ จำผิดวันหรือเปล่าาา 🙈',
+            'เกือบถูกแล้วว เหลืออีกนิดเดียว! 😆'
+        ];
+
+        function checkDate(isCorrect, btnElement) {
+            const reply = document.getElementById('remember-reply');
+            if (isCorrect) {
+                document.getElementById('quiz-choices').style.display = 'none';
+                document.getElementById('app1-title').style.display = 'none';
+                document.getElementById('app1-emoji').innerText = '😘';
+                reply.style.display = 'block';
+                reply.innerText = 'เก่งที่สุดเลย เอาจุ้บไปเลยยย 😘💕';
+                document.getElementById('app1-summary').style.display = 'block';
+                document.getElementById('badge-1').innerText = '✅';
+            } else {
+                btnElement.classList.add('wrong');
+                document.getElementById('app1-emoji').innerText = '😝';
+                reply.style.display = 'block';
+                reply.innerText = wrongMessages[wrongCount % wrongMessages.length];
+                wrongCount++;
+            }
+        }
+
+        // ลอจิกแอปที่ 2: This or That
+        const totQuestions = [
+            {
+                emoji: '⛰️',
+                question: 'ถ้าให้เลือก... ภูเขา หรือ ทะเล?',
+                optA: 'ภูเขา ⛰️',
+                optB: 'ทะเล 🌊',
+                replyA: 'ถูเขา (เค้า) เนี่ยแหละ ใกล้กว่าเยอะ ไม่ต้องขับรถไกล คิคิ 😜',
+                replyB: 'ทะเลอ่ะมีเขา... แต่ถ้าอยากได้เค้า มาจิถอดเสื้อเลย 🙈'
+            },
+            {
+                emoji: '🛋️',
+                question: 'ถ้าอยู่ด้วยกัน... ชอบที่ไหนมากกว่า?',
+                optA: 'บนเตียง 🛏️',
+                optB: 'บนโซฟา 🛋️',
+                replyA: 'บนเตียงมันนุ่ม... เดี๋ยวนอนกอดกันยาวๆ ยันเช้าเลย คิคิ 😈',
+                replyB: 'เปลี่ยนบรรยากาศบ้างก็ดีนะ... โซฟามันแคบ จะได้เบียดกันใกล้ ๆ 🙈'
+            },
+            {
+                emoji: '🍜',
+                question: 'หิว ๆ แบบนี้ เลือกอะไรดี?',
+                optA: 'กินของอร่อยๆ 🍜',
+                optB: 'กินเค้า 😈',
+                replyA: 'กินข้าวให้อิ่มก่อน จะได้มีแรง... ไว้กินเค้าต่อ 😜',
+                replyB: 'อุ๊ยยย พูดแล้วนะ มากินเค้ามา ! 🔥'
+            },
+            {
+                emoji: '🕯️',
+                question: 'บรรยากาศในห้อง... ชอบแบบไหน?',
+                optA: 'ปิดไฟมืด ๆ 🌑',
+                optB: 'เปิดไฟสลัว ๆ 🕯️',
+                replyA: 'ปิดไฟมืด ๆ จะได้คลำหากันสนุก ๆ ใช่มั้ยล่ะ 🙈',
+                replyB: 'แหมมม อยากเห็นหน้าชัดๆ เลยสิท่า เขินนะเนี่ย 😚'
+            },
+            {
+                emoji: '🔥',
+                question: 'ข้อสุดท้าย... คืนนี้เลือกอะไรดีน้าาา?',
+                optA: 'แจ๊ะ 💥',
+                optB: 'นอน 😴',
+                replyA: 'จัดไปอย่าให้เสีย! เตรียมตัวให้พร้อม 🔥💦',
+                replyB: 'ฝันดีน้าเบบี๋ 😪'
+            }
+        ];
+
+        let totIndex = 0;
+        let totAnswers = [];
+        let totAnswered = false;
+
+        function renderTot() {
+            const q = totQuestions[totIndex];
+            totAnswered = false;
+            document.getElementById('tot-step').innerText = `ข้อที่ ${totIndex + 1} / ${totQuestions.length}`;
+            document.getElementById('tot-emoji').innerText = q.emoji;
+            document.getElementById('tot-question').innerText = q.question;
+
+            const optA = document.getElementById('tot-opt-a');
+            const optB = document.getElementById('tot-opt-b');
+            optA.innerText = q.optA;
+            optB.innerText = q.optB;
+            optA.className = 'tot-option';
+            optB.className = 'tot-option';
+
+            document.getElementById('tot-reply').style.display = 'none';
+            document.getElementById('tot-next-btn').style.display = 'none';
+        }
+
+        function selectTot(choice) {
+            if (totAnswered) return;
+            totAnswered = true;
+
+            const q = totQuestions[totIndex];
+            const optA = document.getElementById('tot-opt-a');
+            const optB = document.getElementById('tot-opt-b');
+            const replyBox = document.getElementById('tot-reply');
+
+            if (choice === 0) {
+                optA.classList.add('selected');
+                optB.classList.add('unselected');
+                replyBox.innerText = q.replyA;
+                totAnswers.push(q.optA);
+            } else {
+                optB.classList.add('selected');
+                optA.classList.add('unselected');
+                replyBox.innerText = q.replyB;
+                totAnswers.push(q.optB);
+            }
+
+            replyBox.style.display = 'block';
+            const nextBtn = document.getElementById('tot-next-btn');
+            nextBtn.style.display = 'inline-block';
+            nextBtn.innerText = (totIndex === totQuestions.length - 1) ? 'ดูสรุปคำตอบ 🎉' : 'ข้อต่อไป ➜';
+        }
+
+        function nextTot() {
+            totIndex++;
+            if (totIndex < totQuestions.length) {
+                renderTot();
+            } else {
+                document.getElementById('tot-play-area').style.display = 'none';
+                document.getElementById('tot-result-area').style.display = 'block';
+                document.getElementById('badge-2').innerText = '✅';
+
+                const listEl = document.getElementById('tot-summary-list');
+                listEl.innerHTML = totAnswers.map((ans, i) => `
+                    <div class="tot-summary-item">
+                        <span style="color: #ff758f; font-weight: 600;">ข้อ ${i + 1}</span>
+                        <span style="font-weight: 600; color: #ff4d6d;">${ans}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function resetTot() {
+            totIndex = 0;
+            totAnswers = [];
+            document.getElementById('tot-result-area').style.display = 'none';
+            document.getElementById('tot-play-area').style.display = 'block';
+            renderTot();
+        }
+
+        renderTot();
+
+        // ลอจิกแอปที่ 3: สุ่มดวง 10 ป้าย
+        const prizes = [
+            { icon: '💆‍♂️', title: 'เบบี๋นวดให้', desc: 'เบบี๋ต้องนวดให้เค้านะ ห้ามบ่น! 😜' },
+            { icon: '🙈', title: 'เบบี๋ปิดตา', desc: 'ปิดตาไว้เฉย ๆ เดี๋ยวเค้าจัดการเอง 💋' },
+            { icon: '🥰', title: 'เบบี๋จุ้บแก้มซ้าย-ขวาเค้าอย่างละ 5 ที', desc: 'จุ้บแก้มเค้า คิคิ' },
+            { icon: '🔥', title: 'เบบี๋คุมเกมเอง', desc: 'เค้ายอมหมดเลย 🙈' },
+            { icon: '💦', title: 'อ๊อกให้เบบี๋', desc: 'งั่มมม' },
+            { icon: '😝', title: 'อดแจ๊ะ ว้ายยย', desc: 'ดวงไม่มีเลยน้าาา รอบนี้อดไปก่อน! 😜' },
+            { icon: '😴', title: 'นอนได้แล้วนะ', desc: 'คืนนี้เด็กดี ห่มผ้านอนกอดกันเฉยๆ พอ 🛌' },
+            { icon: '😈', title: 'เงี่ยนก็จัดเล้ยยย', desc: 'ถอดเสื้อผ้าเร็ววว 🔥' },
+            { icon: '🫦', title: 'มามะคนเงี่ยน', desc: 'รอช้าอยู่ทำไม 🙈' },
+            { icon: '😝', title: 'แบบนี้ต้องจัด แจ๊ะ ๆ', desc: 'เริ่มเลยละกัน 💥' }
+        ];
+
+        const shuffledPrizes = [...prizes].sort(() => Math.random() - 0.5);
+        const mysteryGrid = document.getElementById('mystery-grid');
+        const maxPicks = 2;
+        let pickedCards = [];
+
+        shuffledPrizes.forEach((prize, index) => {
+            const card = document.createElement('div');
+            card.className = 'mystery-card';
+            card.dataset.index = index;
+            card.innerHTML = `
+                <div class="card-front-icon">❓</div>
+                <div class="card-front-text">ป้ายที่ ${index + 1}</div>
+            `;
+            card.onclick = () => revealPrize(card, prize);
+            mysteryGrid.appendChild(card);
+        });
+
+        function revealPrize(selectedCard, prize) {
+            if (pickedCards.length >= maxPicks || selectedCard.classList.contains('revealed')) return;
+            
+            pickedCards.push({ card: selectedCard, prize: prize });
+            const remaining = maxPicks - pickedCards.length;
+
+            // เปิดใบที่เลือก
+            selectedCard.classList.add('revealed');
+            selectedCard.innerHTML = `
+                <span class="picked-tag">ป้ายที่ ${pickedCards.length} ✨</span>
+                <div style="font-size: 1.55rem; margin-bottom: 2px;">${prize.icon}</div>
+                <div style="font-family: 'Mali', cursive; font-weight: 700; font-size: 0.82rem; line-height: 1.25;">${prize.title}</div>
+            `;
+
+            const counterEl = document.getElementById('pick-counter');
+            if (remaining > 0) {
+                counterEl.innerText = `เลือกป้ายได้อีก ${remaining} ป้าย ลุ้นๆ 👀`;
+            } else {
+                counterEl.innerText = `เปิดครบ 2 ป้ายแล้ว! มาดูเฉลยป้ายที่เหลือกัน 😜`;
+                counterEl.style.background = '#ff4d6d';
+                counterEl.style.color = '#ffffff';
+
+                // พลิกเฉลยอีก 8 ใบที่เหลือทั้งหมด
+                setTimeout(() => {
+                    document.querySelectorAll('.mystery-card').forEach(c => {
+                        if (!c.classList.contains('revealed')) {
+                            const idx = c.dataset.index;
+                            const otherPrize = shuffledPrizes[idx];
+                            c.classList.add('missed');
+                            c.innerHTML = `
+                                <div style="font-size: 1.35rem; margin-bottom: 2px; opacity: 0.8;">${otherPrize.icon}</div>
+                                <div style="font-family: 'Mali', cursive; font-weight: 600; font-size: 0.74rem; line-height: 1.2;">${otherPrize.title}</div>
+                            `;
+                        }
+                    });
+                }, 500);
+
+                // แสดงสรุปรางวัลทั้ง 2 อย่างด้านล่าง
+                const resultBox = document.getElementById('prize-result');
+                resultBox.style.display = 'block';
+                resultBox.innerHTML = `
+                    <div style="text-align: center; font-size: 1rem; margin-bottom: 8px;">🎉 <strong>สรุปดวงของเบบี๋ 2 ป้าย:</strong></div>
+                    <div style="margin-bottom: 6px;">1️⃣ <strong>${pickedCards[0].prize.title}</strong><br><span style="font-weight: 400; font-size: 0.82rem;">(${pickedCards[0].prize.desc})</span></div>
+                    <div style="margin-bottom: 8px;">2️⃣ <strong>${pickedCards[1].prize.title}</strong><br><span style="font-weight: 400; font-size: 0.82rem;">(${pickedCards[1].prize.desc})</span></div>
+                `;
+                
+                document.getElementById('badge-3').innerText = '✅';
+            }
+        }
+
+        // ลอจิกแอปที่ 4: ความในใจ (จดหมาย)
+        function openLetter() {
+            document.getElementById('envelope-section').style.display = 'none';
+            document.getElementById('letter-section').style.display = 'block';
+            document.getElementById('badge-4').innerText = '✅';
+            burstHearts(12);
+        }
+
+        function sendHug() {
+            document.getElementById('hug-reply').style.display = 'block';
+            document.getElementById('hug-btn').innerText = 'กอดแล้ววว 🥰💕';
+            burstHearts(20);
+        }
+
+        function burstHearts(count) {
+            const emojis = ['❤️', '💖', '🥰', '💕', '🤍', '😘'];
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'burst-heart';
+                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = (Math.random() * 80 + 10) + 'vw';
+                    el.style.top = (Math.random() * 40 + 45) + 'vh';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 1500);
+                }, i * 60);
+            }
+        }
+    </script>
+</body>
+</html>
